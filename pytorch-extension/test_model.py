@@ -1,6 +1,6 @@
 import torch
 import torchvision
-from decorator import DashProfiler
+from profiler import DashProfiler
 
 testmodel = torchvision.models.resnet101()
 
