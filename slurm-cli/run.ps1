@@ -1,0 +1,1 @@
+python .\slurm-cli.py  -i test.sbatch
