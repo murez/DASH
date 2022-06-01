@@ -1,3 +1,4 @@
+import numpy as np
 
 model_num_to_name = {0: 'BERT_pytorch',
                      1: 'LearningToPaint',
@@ -145,7 +146,7 @@ GPU_config = {
 }
 
 GPU_config_list = {
-    'A40': [
+    'A40': np.array([
         1305,
         1740,
         1812,
@@ -153,8 +154,8 @@ GPU_config_list = {
         48.0,
         695.8,
         37.42,
-    ],
-    'V100': [
+    ]),
+    'V100': np.array([
         1230,
         1380,
         876,
@@ -162,8 +163,8 @@ GPU_config_list = {
         2.0,
         897.0,
         14.13,
-    ],
-    'RTX_2080': [
+    ]),
+    'RTX_2080': np.array([
         1350,
         1545,
         1750,
@@ -171,8 +172,8 @@ GPU_config_list = {
         11.0,
         616.0,
         13.45,
-    ],
-    'GTX_1080': [
+    ]),
+    'GTX_1080': np.array([
         1481,
         1582,
         1376,
@@ -180,8 +181,8 @@ GPU_config_list = {
         11.0,
         484.4,
         11.34,
-    ],
-    'TITANX': [
+    ]),
+    'TITANX': np.array([
         1350,
         1770,
         1750,
@@ -189,8 +190,8 @@ GPU_config_list = {
         24.0,
         672.0,
         16.31,
-    ],
-    'TITANXp': [
+    ]),
+    'TITANXp': np.array([
         1405,
         1582,
         1426,
@@ -198,5 +199,5 @@ GPU_config_list = {
         12.0,
         547.6,
         12.15,
-    ],
+    ]),
 }
