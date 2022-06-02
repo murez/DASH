@@ -2,7 +2,7 @@ import subprocess
 import time
 import os
 
-def job_profile(path: str, job_name: int):
+def job_profile(path: str, job_name: int) -> int:
     if not os.path.exists('tmp'):
         os.makedirs('tmp')
 
@@ -23,9 +23,10 @@ def job_profile(path: str, job_name: int):
     job_id = response.split(' ')[-1].strip()
     print("The job to profile is ",job_id)
     print(response)
-    return job_id
+    return int(job_id)
 
-def change_node(path: str, job_name: int, new_node: str):
+def change_node(path: str, job_name: int, new_card: str) -> int:
+    print(path, job_name, new_card)
     if not os.path.exists('tmp'):
         os.makedirs('tmp')
 
@@ -35,14 +36,14 @@ def change_node(path: str, job_name: int, new_node: str):
     to_insert = 0
     for to_insert, line in enumerate(contents):
         if line.lstrip().startswith('#'):
-            if line.lstrip().startswith('#SBATCH --nodelist='):
-                to_insert -= 1
-                contents.remove(to_insert)
+            if line.lstrip().startswith('#SBATCH --gres=gpu:'):
+                print("remove old card config: ", contents[to_insert])
+                del contents[to_insert]
                 break;
         else:
             break;
 
-    contents.insert(to_insert, '#SBATCH --nodelist={}\n'.format(new_node))
+    contents.insert(to_insert, '#SBATCH --gres=gpu:{}:1\n'.format(new_card))
     with open('tmp/{}.run'.format(job_name), 'w+') as f:
         f.writelines(contents)
 
@@ -50,7 +51,7 @@ def change_node(path: str, job_name: int, new_node: str):
     job_id = response.split(' ')[-1].strip()
     print("The job to run ",job_id)
     print(response)
-    return job_id
+    return int(job_id)
 
 if __name__ =="__main__":
     id_profile = job_profile("/public/home/qinfr/DASH/test/test.sbatch", 1)

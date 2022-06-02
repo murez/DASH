@@ -51,4 +51,5 @@ def parse(filename: str) -> bool:
         for line in f.readlines():
             # Give the lexer some input
             tok = parseline(line)
-            print(tok)
+            if tok is not None:
+                print(tok)

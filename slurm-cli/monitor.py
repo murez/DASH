@@ -21,17 +21,21 @@ def checkRunningQueue():
     for job in _jobs:
         if job[3] not in checkUserQueue():
             print("JobID {} has finished.".format(job[0]))
-            jobs.FinishedJob(job[0])
+            if job[4] == jobs.P_CLUSTERS:
+                jobs.FinishedJobPCluster(job[0])
+            if job[4] == jobs.E_CLUSTERS:
+                jobs.FinishedJob(job[0])
     
 
 if __name__ == "__main__":
+    waittime = 5
     while(True):
         checkRunningQueue()
-        time.sleep(1)
+        time.sleep(waittime)
         scheduler.SchedulerP()
-        time.sleep(1)
+        time.sleep(waittime)
         scheduler.Scheduler()
-        time.sleep(1)
+        time.sleep(waittime)
         
 
 

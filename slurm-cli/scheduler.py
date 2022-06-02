@@ -12,9 +12,10 @@ import config
 import jobs
 import traffic
 import numpy as np
-from datetime import datetime
+import tasksubmit
+import datetime
 
-ratio = 1 # DEADLINE ratio
+ratio = 1
 
 def ifLock() -> bool:
     with open("database.lock","r") as f:
@@ -54,9 +55,13 @@ def Scheduler():
     if card == None: # 出错或者没有空闲卡
         return 
     job = jobs.GetJobByCard(card) #找到对应的任务的执行文件
+    # (ID, PATH, min({}))
     if job==-1:
         return # 出错或者无任务
     # tasksubmit.TaskSubmit(job) #运行任务 TODO:
+    slurm_id = tasksubmit.change_node(job[1],job[0],card)
+    jobs.RunJobOnCard(job[0], card, slurm_id)
+
 
 def SchedulerP():
     """
@@ -64,13 +69,17 @@ def SchedulerP():
     """
     if ifLock() == True:
         return
-    card = traffic.GetFreeCardFromPCluster
+    card = traffic.GetFreeCardFromPCluster()
+
     if card == None: # 出错或者没有空闲卡
         return 
     job = jobs.GetClosetJob() # 临近 DDL 的任务 # (ID, PATH, min(DEADLINE))
     if job == -1:
         return # 出错或者无任务
     # TODO: 运行任务
+    print(job)
+    slurm_id = tasksubmit.change_node(job[1],job[0],card)
+    jobs.RunJobOnPCluster(job[0], card, slurm_id)
 
 def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV: int, NVIDIAGeForceRTX2080Ti: int,NVIDIATITANXp:int) -> str:
     """
@@ -87,7 +96,7 @@ def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV:
     """
     Lock()
     # 先放入数据库
-    if jobs.InsertJob(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, np.mean([NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp])) == False:
+    if jobs.PutJobs(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, np.mean([NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp])) == False:
         print("InsertJob failed")
         return -1
     # 再获得基础时间
@@ -105,10 +114,11 @@ def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV:
     _time = base_time + time_in_queue # Unix time
     _time = _time * ratio
     jobs.UpdateJobDDLByID(jobID, _time)
-    readable_time = datetime.utcfromtimestamp(_time).strftime('%Y-%m-%d %H:%M:%S') # readable time
+    readable_time = datetime.datetime.utcfromtimestamp(_time + 8*60*60).strftime('%Y-%m-%dT%H:%M:%SZ') # readable time
 
     UnLock()
-    
+
+    return readable_time
 
 if __name__ ==" __main__":
     pass
