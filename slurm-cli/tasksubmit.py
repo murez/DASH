@@ -21,7 +21,7 @@ def job_profile(path: str, job_name: int):
 
     response = subprocess.getoutput("sbatch tmp/{}.profile.run".format(job_name));
     job_id = response.split(' ')[-1].strip()
-    print("The Job to profile is",job_id)
+    print("The job to profile is ",job_id)
     print(response)
     return job_id
 
@@ -48,7 +48,7 @@ def change_node(path: str, job_name: int, new_node: str):
 
     response = subprocess.getoutput("sbatch tmp/{}.run".format(job_name));
     job_id = response.split(' ')[-1].strip()
-    print("The Job to run",job_id)
+    print("The job to run ",job_id)
     print(response)
     return job_id
 

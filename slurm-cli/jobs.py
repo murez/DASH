@@ -32,6 +32,7 @@ def InitDatabase():
     c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (2, "NVIDIATITANV", 0, 1))
     c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (3, "NVIDIAGeForceRTX2080Ti", 0, 1))
     c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (4, "NVIDIATITANXp", 0, 1))
+    c.execute("INSERT INTO P_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (1, "NVIDIAGeForceRTX2080Ti", 0, 1))
     print ("数据表初始化数据完成")
     conn.commit()
     conn.close()
@@ -103,7 +104,7 @@ def DeleteJobByID(jobID: int) -> bool:
     return True
 
 
-def GetInUseAndLimitByCardname(cardname: str) :
+def GetInUseAndLimitByCardname(cardname: str):
     try:
         conn = sqlite3.connect(DATABASE_NAME)
         c = conn.cursor()
@@ -116,6 +117,21 @@ def GetInUseAndLimitByCardname(cardname: str) :
         print(e)
         return (-1,-1)
     return result[0]
+
+def GetInUseAndLimitByCardnamePCluster(cardname: str):
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT InUSE,LIMIT_ FROM P_CLUSTERS WHERE CARDNAME='{}'".format(cardname))
+        result = c.fetchall()
+        conn.commit()
+        conn.close()
+        print("DEBUG: CARD {} is running {} jobs with max limit {}.".format(cardname, result[0][0], result[0][1]))
+    except Exception as e:
+        print(e)
+        return (-1,-1)
+    return result[0]
+
 
 def RunJobOnCard(jobID: int, cardname: str, slurmId: int) -> bool:
     try:
@@ -136,6 +152,29 @@ def RunJobOnCard(jobID: int, cardname: str, slurmId: int) -> bool:
         print(e)
         return False
     return True
+
+def RunJobOnPCluster(jobID: int, slurmId: int) -> bool:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        card = GetInUseAndLimitByCardnamePCluster("NVIDIAGeForceRTX2080Ti")
+        if card[0] == -1:
+            return False
+        if card[0] >= card[1]:
+            print("FATAL ERROR: Run jobs on card exceed max limit.")
+        c.execute("UPDATE P_CLUSTERS SET InUSE={} WHERE CARDNAME={}".format(card[0]+1,"NVIDIAGeForceRTX2080Ti"))
+        job = GetJobAndTimeByIDCard(jobID) # (ID, ESTIMATED_TIME)
+        c.execute("DELETE FROM JOBS WHERE ID={}".format(jobID))
+        c.execute("INSERT INTO RUNNING_JOBS (ID, CARDNAME, FINISH_TIME, SLURM_ID) VALUES (?,?,?,?)", (job[0], "NVIDIAGeForceRTX2080Ti", int(time.time())+job[1] ,slurmId))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+
+
 
 def FailRunJobOnCard(jobID: int, cardID: int) -> bool:
     print("Oops, FailRunJobOnCard")
@@ -176,11 +215,111 @@ def GetMaxFinishTimeinRunningQueue() -> int: # Return max finish time in unix se
         return -1
     return result[0] 
 
+def GetAllCards() -> list:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, InUSE, LIMIT_ FROM E_CLUSTERS")
+        result = c.fetchall()
+        conn.commit()
+        conn.close()
+        print("FIND:", result)
+    except Exception as e:
+        print(e)
+        return []
+    return result
 
+def GetAllCards()-> list:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, InUSE, LIMIT_ FROM E_CLUSTERS")
+        result = c.fetchall()
+        conn.commit()
+        conn.close()
+        print("FIND:", result)
+    except Exception as e:
+        print(e)   
+        return [-1]
+    return result
+
+def GetAllCardsFromPCluster() -> list:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, InUSE, LIMIT_ FROM P_CLUSTERS")
+        result = c.fetchall()
+        conn.commit()
+        conn.close()
+        print("FIND:", result)
+    except Exception as e:
+        print(e)   
+        return [-1]
+    return result
+
+def GetAllRunningJobs()->list:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, FINISH_TIME, SLURM_ID FROM RUNNING_JOBS")
+        result = c.fetchall()
+        conn.commit()
+        conn.close()
+        print("FIND:", result)
+    except Exception as e:
+        print(e)
+        return []
+    return result
+
+def FinishedJob(jobID: int) -> bool:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, FINISH_TIME, SLURM_ID FROM RUNNING_JOBS WHERE ID={}".format(jobID))
+        job = c.fetchall()[0] # (ID, CARDNAME, FINISH_TIME, SLURM_ID)
+        c.execute("DELETE FROM RUNNING_JOBS WHERE ID={}".format(jobID))
+        card = GetInUseAndLimitByCardname(job[1])  # InUSE,LIMIT_ FROM E_CLUSTERS
+        c.execute("UPDATE E_CLUSTERS SET InUSE={} WHERE CARDNAME={}".format(card[0]-1,job[1]))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+def FinishedJobPCluster(jobID: int) -> bool:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, CARDNAME, FINISH_TIME, SLURM_ID FROM RUNNING_JOBS WHERE ID={}".format(jobID))
+        job = c.fetchall()[0] # (ID, CARDNAME, FINISH_TIME, SLURM_ID)
+        c.execute("DELETE FROM RUNNING_JOBS WHERE ID={}".format(jobID))
+        card = GetInUseAndLimitByCardnamePCluster(job[1])  # InUSE,LIMIT_ FROM E_CLUSTERS
+        c.execute("UPDATE P_CLUSTERS SET InUSE={} WHERE CARDNAME={}".format(card[0]-1,job[1]))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(e)
+        return False
+    return True
+
+def GetClosetJob() -> list:
+    try:
+        conn = sqlite3.connect(DATABASE_NAME)
+        c = conn.cursor()
+        c.execute("SELECT ID, PATH, min(DEADLINE) FROM JOBS")
+        result = c.fetchall()[0]
+        print("Find", result[0])
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(e)
+        return -1
+    return result[0]
 
 
 if __name__ =="__main__":
-    # InitDatabase()
+    InitDatabase()
     # testJobs1()
-    # print(GetMediumTimeSumBeforeID(3))
+    print(GetAllCards())
     pass
