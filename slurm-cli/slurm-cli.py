@@ -19,13 +19,13 @@ if __name__ == "__main__":
     jobID = int(time.time())
 
     # FIXME: 开启 profile
-    # slurm_id = tasksubmit.job_profile(args.input, jobID)
-    # print("Profiling",end="")
-    # time.sleep(5)
-    # while(slurm_id in monitor.checkUserQueue()):
-    #     print(monitor.checkUserQueue())
-    #     print(".",end="")
-    #     time.sleep(1)
+    slurm_id = tasksubmit.job_profile(args.input, jobID)
+    print("Profiling",end="")
+    time.sleep(1)
+    while(slurm_id in monitor.checkUserQueue()):
+        print(monitor.checkUserQueue())
+        print(".",end="")
+        time.sleep(1)
 
     #TODO: 将完成的 profile 传给 predictor
     # "/public/home/qinfr/DASH/slurm-cli/tmp/{}.log".format(jobID)
