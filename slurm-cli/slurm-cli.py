@@ -23,7 +23,7 @@ if __name__ == "__main__":
     print("Profiling",end="")
     time.sleep(1)
     while(slurm_id in monitor.checkUserQueue()):
-        print(monitor.checkUserQueue())
+        # print(monitor.checkUserQueue())
         print(".",end="")
         time.sleep(1)
 
@@ -31,6 +31,16 @@ if __name__ == "__main__":
     # "/public/home/qinfr/DASH/slurm-cli/tmp/{}.log".format(jobID)
 
     print("\nProfiling finished.")
+
+    # est_time = []
+    # with open("{}.log".format(jobID), "r") as logfile:
+    #     for line in logfile.readlines():
+    #         if line.startswith("estimate_time:"):
+    #             line = line.strip().strip("estimate_time:").strip().split(",")
+    #             est_time = [int(i) for i in line]
+    #             break
+
+    # ddl = scheduler.EstimateTime(jobID, args.input, est_time[0],est_time[1],est_time[2],est_time[3])
     ddl = scheduler.EstimateTime(jobID, args.input, 70,70,70,70)
     print("EstimateTime: {}".format(ddl))
     print("Do you like what you see?")

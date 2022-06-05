@@ -13,7 +13,7 @@ def checkUserQueue() -> list:
         line=line.strip()
         line = re.sub('\s+', ' ', line)
         jobinfo = [x.strip() for x in line.split(' ')]
-        ret.append(jobinfo[0])
+        ret.append(int(jobinfo[0]))
     return ret
 
 def checkRunningQueue():

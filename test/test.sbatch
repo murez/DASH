@@ -13,4 +13,4 @@
 #TAG=V100
 hostname
 cat /public/home/qinfr/DASH/test/input
-sleep 5s
+sleep 30s
