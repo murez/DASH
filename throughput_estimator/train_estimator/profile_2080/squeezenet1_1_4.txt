@@ -1,0 +1,107 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+autograd::engine::evaluate_function: ConvolutionBack...         2.37%      49.676ms        41.69%     874.207ms     262.682us       0.000us         0.00%     369.295ms     110.966us          3328  
+                                   ConvolutionBackward0         0.93%      19.412ms        38.24%     801.814ms     240.930us       0.000us         0.00%     366.593ms     110.154us          3328  
+                             aten::convolution_backward        22.10%     463.331ms        37.31%     782.402ms     235.097us     332.283ms        54.25%     366.593ms     110.154us          3328  
+                                           aten::conv2d         0.55%      11.608ms        24.81%     520.204ms     156.311us       0.000us         0.00%     112.705ms      33.866us          3328  
+                                      aten::convolution         1.40%      29.443ms        24.26%     508.596ms     152.823us       0.000us         0.00%     112.705ms      33.866us          3328  
+                                     aten::_convolution         1.83%      38.356ms        22.85%     479.153ms     143.976us       0.000us         0.00%     112.705ms      33.866us          3328  
+                                aten::cudnn_convolution        13.10%     274.640ms        16.94%     355.182ms     106.725us      91.518ms        14.94%      91.518ms      27.499us          3328  
+volta_scudnn_winograd_128x128_ldg1_ldg4_relu_tile148...         0.00%       0.000us         0.00%       0.000us       0.000us      75.076ms        12.26%      75.076ms      36.658us          2048  
+void wgrad_alg0_engine<float, 128, 6, 8, 3, 3, 5, fa...         0.00%       0.000us         0.00%       0.000us       0.000us      70.482ms        11.51%      70.482ms      78.663us           896  
+void wgrad_alg0_engine<float, 128, 5, 5, 3, 3, 3, fa...         0.00%       0.000us         0.00%       0.000us       0.000us      52.831ms         8.62%      52.831ms      58.963us           896  
+                                             aten::add_         5.40%     113.296ms        10.14%     212.617ms      18.930us      36.458ms         5.95%      36.458ms       3.246us         11232  
+autograd::engine::evaluate_function: MaxPool2DWithIn...         0.20%       4.270ms         1.13%      23.693ms      61.701us       0.000us         0.00%      35.092ms      91.385us           384  
+                          MaxPool2DWithIndicesBackward0         0.09%       1.785ms         0.93%      19.423ms      50.581us       0.000us         0.00%      35.092ms      91.385us           384  
+                 aten::max_pool2d_with_indices_backward         0.33%       6.955ms         0.84%      17.638ms      45.932us      30.426ms         4.97%      35.092ms      91.385us           384  
+                                              aten::sum         3.91%      82.013ms         5.66%     118.639ms      35.649us      34.310ms         5.60%      34.310ms      10.309us          3328  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us      34.310ms         5.60%      34.310ms      10.309us          3328  
+void at::native::(anonymous namespace)::max_pool_bac...         0.00%       0.000us         0.00%       0.000us       0.000us      30.426ms         4.97%      30.426ms      79.234us           384  
+     autograd::engine::evaluate_function: ReluBackward0         1.28%      26.829ms         6.38%     133.698ms      40.174us       0.000us         0.00%      30.263ms       9.093us          3328  
+                                          ReluBackward0         0.78%      16.313ms         5.10%     106.869ms      32.112us       0.000us         0.00%      30.263ms       9.093us          3328  
+                               aten::threshold_backward         2.80%      58.741ms         4.32%      90.556ms      27.210us      30.263ms         4.94%      30.263ms       9.093us          3328  
+void wgrad_alg0_engine<float, 512, 6, 5, 3, 3, 3, fa...         0.00%       0.000us         0.00%       0.000us       0.000us      30.202ms         4.93%      30.202ms      39.326us           768  
+            volta_scudnn_128x64_stridedB_interior_nn_v1         0.00%       0.000us         0.00%       0.000us       0.000us      26.058ms         4.25%      26.058ms      29.083us           896  
+                volta_scudnn_128x64_relu_interior_nn_v1         0.00%       0.000us         0.00%       0.000us       0.000us      23.030ms         3.76%      23.030ms      25.703us           896  
+void at::native::elementwise_kernel<128, 2, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us      21.236ms         3.47%      21.236ms       6.381us          3328  
+void cudnn::detail::dgrad_alg1_engine<float, 128, 5,...         0.00%       0.000us         0.00%       0.000us       0.000us      20.919ms         3.42%      20.919ms      20.429us          1024  
+void at::native::elementwise_kernel<128, 2, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us      17.601ms         2.87%      17.601ms       8.594us          2048  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      17.261ms         2.82%      17.261ms       2.132us          8096  
+                                            aten::relu_         1.80%      37.742ms         4.64%      97.306ms      29.239us       0.000us         0.00%      15.788ms       4.744us          3328  
+                                       aten::clamp_min_         1.46%      30.643ms         2.84%      59.564ms      17.898us      15.788ms         2.58%      15.788ms       4.744us          3328  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      15.788ms         2.58%      15.788ms       4.744us          3328  
+void pointwise_mult_and_sum_complex<float2, 8, 4>(fl...         0.00%       0.000us         0.00%       0.000us       0.000us      14.871ms         2.43%      14.871ms      58.090us           256  
+void fft2d_c2r_64x64<float, false, true>(float*, flo...         0.00%       0.000us         0.00%       0.000us       0.000us      13.933ms         2.27%      13.933ms      54.426us           256  
+autograd::engine::evaluate_function: torch::autograd...         1.92%      40.319ms         9.17%     192.223ms      28.880us       0.000us         0.00%      13.690ms       2.057us          6656  
+                        torch::autograd::AccumulateGrad         1.54%      32.348ms         7.24%     151.904ms      22.822us       0.000us         0.00%      13.690ms       2.057us          6656  
+void implicit_convolve_sgemm<float, float, 1024, 5, ...         0.00%       0.000us         0.00%       0.000us       0.000us      13.131ms         2.14%      13.131ms      20.517us           640  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      12.662ms         2.07%      12.662ms       9.892us          1280  
+                                              aten::cat         0.98%      20.557ms         1.45%      30.316ms      29.605us      11.863ms         1.94%      11.863ms      11.585us          1024  
+void at::native::(anonymous namespace)::CatArrayBatc...         0.00%       0.000us         0.00%       0.000us       0.000us      11.863ms         1.94%      11.863ms      11.585us          1024  
+volta_scudnn_128x32_sliced1x4_ldg4_relu_exp_medium_n...         0.00%       0.000us         0.00%       0.000us       0.000us      10.471ms         1.71%      10.471ms      27.268us           384  
+                                       aten::max_pool2d         0.06%       1.266ms         0.64%      13.397ms      34.888us       0.000us         0.00%      10.396ms      27.073us           384  
+                          aten::max_pool2d_with_indices         0.41%       8.527ms         0.58%      12.131ms      31.591us      10.396ms         1.70%      10.396ms      27.073us           384  
+void at::native::(anonymous namespace)::max_pool_for...         0.00%       0.000us         0.00%       0.000us       0.000us      10.396ms         1.70%      10.396ms      27.073us           384  
+void flip_filter<float, float>(float*, float const*,...         0.00%       0.000us         0.00%       0.000us       0.000us      10.250ms         1.67%      10.250ms      40.039us           256  
+void fft2d_r2c_64x64<float, true>(float2*, float con...         0.00%       0.000us         0.00%       0.000us       0.000us       9.779ms         1.60%       9.779ms      19.100us           512  
+                               Optimizer.step#Adam.step         1.68%      35.132ms         5.40%     113.283ms      14.160ms       0.000us         0.00%       6.991ms     873.875us             8  
+void wgrad_alg0_engine<float, 128, 6, 7, 3, 3, 5, fa...         0.00%       0.000us         0.00%       0.000us       0.000us       6.951ms         1.13%       6.951ms      27.152us           256  
+void cudnn::winograd::generateWinogradTilesKernel<0,...         0.00%       0.000us         0.00%       0.000us       0.000us       6.413ms         1.05%       6.413ms       3.131us          2048  
+                                            aten::fill_         0.38%       8.061ms         0.86%      18.096ms      15.600us       5.829ms         0.95%       5.829ms       5.025us          1160  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       5.829ms         0.95%       5.829ms       5.025us          1160  
+                                            aten::zero_         0.28%       5.773ms         1.04%      21.767ms      20.770us       0.000us         0.00%       5.623ms       5.365us          1048  
+                   volta_scudnn_128x64_relu_small_nn_v1         0.00%       0.000us         0.00%       0.000us       0.000us       5.413ms         0.88%       5.413ms      42.289us           128  
+                                        Memset (Device)         0.00%       0.000us         0.00%       0.000us       0.000us       4.627ms         0.76%       4.627ms       1.643us          2816  
+                                   volta_sgemm_64x64_nt         0.00%       0.000us         0.00%       0.000us       0.000us       4.374ms         0.71%       4.374ms      17.086us           256  
+void cudnn::winograd_nonfused::winogradWgradOutput4x...         0.00%       0.000us         0.00%       0.000us       0.000us       3.817ms         0.62%       3.817ms      14.910us           256  
+void implicit_convolve_sgemm<float, float, 128, 5, 5...         0.00%       0.000us         0.00%       0.000us       0.000us       3.519ms         0.57%       3.519ms      13.746us           256  
+void cask_cudnn::computeOffsetsKernel<false, false>(...         0.00%       0.000us         0.00%       0.000us       0.000us       2.818ms         0.46%       2.818ms       2.001us          1408  
+                                              aten::add         0.68%      14.220ms         1.08%      22.717ms      22.185us       2.702ms         0.44%       2.702ms       2.639us          1024  
+void cudnn::ops::scalePackedTensor_kernel<float, flo...         0.00%       0.000us         0.00%       0.000us       0.000us       2.608ms         0.43%       2.608ms       2.547us          1024  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       2.402ms         0.39%       2.402ms       1.925us          1248  
+void cask_cudnn::computeOffsetsKernel<true, false>(c...         0.00%       0.000us         0.00%       0.000us       0.000us       2.310ms         0.38%       2.310ms       2.005us          1152  
+cask_cudnn::computeBOffsetsKernel(cask_cudnn::Comput...         0.00%       0.000us         0.00%       0.000us       0.000us       1.855ms         0.30%       1.855ms       1.610us          1152  
+              volta_scudnn_128x128_stridedB_small_nn_v1         0.00%       0.000us         0.00%       0.000us       0.000us       1.846ms         0.30%       1.846ms      14.422us           128  
+                                             aten::mul_         0.47%       9.809ms         0.82%      17.113ms      20.569us       1.683ms         0.27%       1.683ms       2.023us           832  
+               volta_scudnn_128x64_stridedB_small_nn_v1         0.00%       0.000us         0.00%       0.000us       0.000us       1.603ms         0.26%       1.603ms      12.523us           128  
+                                              aten::div         0.44%       9.296ms         0.67%      14.040ms      25.809us       1.507ms         0.25%       1.507ms       2.770us           544  
+void cudnn::ops::nchwToNhwcKernel<float, float, floa...         0.00%       0.000us         0.00%       0.000us       0.000us       1.465ms         0.24%       1.465ms       3.815us           384  
+                                         aten::addcdiv_         0.22%       4.560ms         0.38%       8.053ms      19.358us       1.255ms         0.20%       1.255ms       3.017us           416  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       1.255ms         0.20%       1.255ms       3.017us           416  
+void cudnn::winograd_nonfused::winogradWgradDelta4x4...         0.00%       0.000us         0.00%       0.000us       0.000us       1.181ms         0.19%       1.181ms       4.613us           256  
+                              aten::adaptive_avg_pool2d         0.02%     419.000us         0.24%       4.975ms      38.867us       0.000us         0.00%       1.048ms       8.188us           128  
+                                             aten::mean         0.16%       3.322ms         0.22%       4.556ms      35.594us       1.048ms         0.17%       1.048ms       8.188us           128  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us       1.048ms         0.17%       1.048ms       8.188us           128  
+void cudnn::winograd_nonfused::winogradWgradData4x4<...         0.00%       0.000us         0.00%       0.000us       0.000us     998.000us         0.16%     998.000us       3.898us           256  
+void cudnn::ops::nhwcToNchwKernel<float, float, floa...         0.00%       0.000us         0.00%       0.000us       0.000us     996.000us         0.16%     996.000us       2.594us           384  
+autograd::engine::evaluate_function: NativeDropoutBa...         0.05%       1.078ms         0.27%       5.651ms      44.148us       0.000us         0.00%     890.000us       6.953us           128  
+                                 NativeDropoutBackward0         0.02%     456.000us         0.22%       4.573ms      35.727us       0.000us         0.00%     890.000us       6.953us           128  
+                          aten::native_dropout_backward         0.08%       1.594ms         0.20%       4.117ms      32.164us     890.000us         0.15%     890.000us       6.953us           128  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     890.000us         0.15%     890.000us       6.953us           128  
+                                             aten::sqrt         0.28%       5.803ms         0.44%       9.238ms      22.207us     873.000us         0.14%     873.000us       2.099us           416  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     873.000us         0.14%     873.000us       2.099us           416  
+                               aten::cross_entropy_loss         0.03%     620.000us         0.47%       9.774ms      76.359us       0.000us         0.00%     792.000us       6.188us           128  
+     autograd::engine::evaluate_function: MeanBackward1         0.05%       1.028ms         0.35%       7.260ms      56.719us       0.000us         0.00%     788.000us       6.156us           128  
+                                          MeanBackward1         0.04%     759.000us         0.30%       6.232ms      48.688us       0.000us         0.00%     788.000us       6.156us           128  
+void at::native::elementwise_kernel<128, 2, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us     788.000us         0.13%     788.000us       6.156us           128  
+                                         aten::addcmul_         0.21%       4.472ms         0.38%       7.950ms      19.111us     769.000us         0.13%     769.000us       1.849us           416  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     769.000us         0.13%     769.000us       1.849us           416  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us     712.000us         0.12%     712.000us       1.712us           416  
+                     Optimizer.zero_grad#Adam.zero_grad         0.13%       2.819ms         0.56%      11.846ms       1.481ms       0.000us         0.00%     641.000us      80.125us             8  
+                                          aten::dropout         0.02%     402.000us         0.35%       7.331ms      57.273us       0.000us         0.00%     588.000us       4.594us           128  
+                                   aten::native_dropout         0.14%       2.948ms         0.33%       6.929ms      54.133us     588.000us         0.10%     588.000us       4.594us           128  
+void at::native::(anonymous namespace)::fused_dropou...         0.00%       0.000us         0.00%       0.000us       0.000us     588.000us         0.10%     588.000us       4.594us           128  
+autograd::engine::evaluate_function: LogSoftmaxBackw...         0.05%     959.000us         0.22%       4.644ms      36.281us       0.000us         0.00%     588.000us       4.594us           128  
+                                    LogSoftmaxBackward0         0.03%     647.000us         0.18%       3.685ms      28.789us       0.000us         0.00%     588.000us       4.594us           128  
+                       aten::_log_softmax_backward_data         0.09%       1.815ms         0.14%       3.038ms      23.734us     588.000us         0.10%     588.000us       4.594us           128  
+void (anonymous namespace)::softmax_warp_backward<fl...         0.00%       0.000us         0.00%       0.000us       0.000us     588.000us         0.10%     588.000us       4.594us           128  
+autograd::engine::evaluate_function: NllLossBackward...         0.08%       1.628ms         0.41%       8.568ms      66.938us       0.000us         0.00%     536.000us       4.188us           128  
+                                       NllLossBackward0         0.03%     605.000us         0.33%       6.940ms      54.219us       0.000us         0.00%     536.000us       4.188us           128  
+                                aten::nll_loss_backward         0.10%       2.105ms         0.30%       6.335ms      49.492us     331.000us         0.05%     536.000us       4.188us           128  
+                                      aten::log_softmax         0.03%     592.000us         0.21%       4.418ms      34.516us       0.000us         0.00%     460.000us       3.594us           128  
+                                     aten::_log_softmax         0.12%       2.530ms         0.18%       3.743ms      29.242us     460.000us         0.08%     460.000us       3.594us           128  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 2.097s
+Self CUDA time total: 612.552ms
+
