@@ -8,22 +8,23 @@ import sys
 # appending the directory of mod.py
 # in the sys.path list
 sys.path.append('/public/home/qinfr/DASH/throughput_estimator/Shanghaitech_SIST_datacenter')   
-import config
 import jobs
 import traffic
-import numpy as np
+# import numpy as np
 import tasksubmit
 import datetime
 
-ratio = 1
+ratio = 1.5
 
 def ifLock() -> bool:
+
     with open("database.lock","r") as f:
         if f.read() == "1":
             print("Lock!")
             return True
         else:
             return False
+    
 
 def Lock() -> None:
     """
@@ -82,7 +83,7 @@ def SchedulerP():
     slurm_id = tasksubmit.change_node(job[1],job[0],card)
     jobs.RunJobOnPCluster(job[0], card, slurm_id)
 
-def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV: int, NVIDIAGeForceRTX2080Ti: int,NVIDIATITANXp:int) -> str:
+def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV: int, NVIDIATITANXp:int,NVIDIAGeForceRTX2080Ti: int) -> str:
     """
     这个函数是运行完测试之后，放入数据库中的操作
     This function is used to estimate the time of jobs.
@@ -95,25 +96,31 @@ def EstimateTime(jobID: int, path: str,NVIDIAGeForceGTX1080: int , NVIDIATITANV:
 
     TODO: 加锁防止 monitor 自动运行
     """
+    if ifLock() == True:
+        return "Try next time..."
     Lock()
     # 先放入数据库
-    if jobs.PutJobs(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, np.mean([NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp])) == False:
+    if jobs.PutJobs(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIATITANXp,NVIDIAGeForceRTX2080Ti, (NVIDIAGeForceGTX1080+NVIDIATITANV+NVIDIAGeForceRTX2080Ti+NVIDIATITANXp)//4) == False:
         print("InsertJob failed")
         return -1
+    # UnLock()
+
+    # return ""
     # 再获得基础时间
     base_time = jobs.GetMaxFinishTimeinRunningQueue()
     if (base_time == -1):
         print("GetMaxFinishTimeinRunningQueue failed")
         return -1
     # 在获得队列中前面的时间
-    time_in_queue = jobs.GetMediumTimeSumBeforeID(jobID)
+    time_in_queue = jobs.GetMediumTimeSumBeforeID(jobID) 
     if (time_in_queue == -1):
         print("GetMediumTimeSumBeforeID failed")
         return -1
 
     # 转换成 GMT 时间 并更新
-    _time = base_time + time_in_queue # Unix time
-    _time = _time * ratio
+    _time = base_time + int(time_in_queue* ratio) # Unix time
+
+
     jobs.UpdateJobDDLByID(jobID, _time)
     readable_time = datetime.datetime.utcfromtimestamp(_time + 8*60*60).strftime('%Y-%m-%dT%H:%M:%SZ') # readable time
 
@@ -138,7 +145,7 @@ def EstimateTimeWithoutInsert(jobID: int, path: str,NVIDIAGeForceGTX1080: int , 
         return
     Lock()
     # 先放入数据库
-    if jobs.PutJobs(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, np.mean([NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp])) == False:
+    if jobs.PutJobs(jobID,path,NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, (NVIDIAGeForceGTX1080+NVIDIATITANV+NVIDIAGeForceRTX2080Ti+NVIDIATITANXp)//4) == False:
         print("InsertJob failed")
         return -1
     # 再获得基础时间
@@ -161,6 +168,24 @@ def EstimateTimeWithoutInsert(jobID: int, path: str,NVIDIAGeForceGTX1080: int , 
     UnLock()
 
     return readable_time
+
+
+def SchedulerN():
+    if ifLock() == True:
+        return
+    cards =jobs.GetAllCards() #找到卡名
+    for card in cards:
+        job = jobs.GetJobByCard(card[1]) #找到对应的任务的执行文件
+        # (ID, PATH, min({}))
+        if (card[2] >= card[3]):
+            continue
+        if job==-1:
+            continue # 出错或者无任务
+        # tasksubmit.TaskSubmit(job) #运行任务 TODO:
+        slurm_id = tasksubmit.change_node(job[1],job[0],card[1])
+        jobs.RunJobOnCard(job[0], card[1], slurm_id)
+
+
 
 if __name__ ==" __main__":
     pass

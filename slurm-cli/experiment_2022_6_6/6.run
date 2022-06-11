@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH -J eva_baseline
+#SBATCH -p critical
+#SBATCH -t 01:30:00
+#SBATCH -o ./1654535763.out
+#SBATCH -e ./1654535763.err
+#SBATCH --gres=gpu:NVIDIAGeForceGTX1080:1
+set -e
+source ~/.bashrc
+conda activate torchbenchmark
+cd ~/benchmark
+proxychains4 -f ~/.proxychains_conf/node_to_login.conf python -u /public/home/qinfr/benchmark/test_running.py mobilenet_v2 64 9491 

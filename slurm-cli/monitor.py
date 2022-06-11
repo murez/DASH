@@ -3,6 +3,7 @@ import subprocess
 import jobs
 import re
 import time
+import datetime
 
 def checkUserQueue() -> list:
     ret = []
@@ -28,14 +29,17 @@ def checkRunningQueue():
     
 
 if __name__ == "__main__":
-    waittime = 5
+    waittime = 3
     while(True):
+        print("The Time is: {}",datetime.datetime.utcfromtimestamp(int(time.time()) + 8*60*60).strftime('%Y-%m-%dT%H:%M:%SZ'))
         checkRunningQueue()
         time.sleep(waittime)
         scheduler.SchedulerP()
         time.sleep(waittime)
         scheduler.Scheduler()
         time.sleep(waittime)
+        # scheduler.SchedulerN()
+        # time.sleep(waittime)
         
 
 

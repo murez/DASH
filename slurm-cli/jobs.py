@@ -21,28 +21,29 @@ def InitDatabase():
         PATH           STRING NOT NULL,
         NVIDIAGeForceGTX1080     INT     NOT NULL,
         NVIDIATITANV  INT     NOT NULL,
+        NVIDIATITANRTX INT NOT NULL,
         NVIDIAGeForceRTX2080Ti INT NOT NULL,
-        NVIDIATITANXp INT NOT NULL,
         MediumTime INT NOT NULL,
         DEADLINE INT);''')
     c.execute('''CREATE TABLE E_CLUSTERS (ID INT PRIMARY KEY NOT NULL, CARDNAME STRING NOT NULL ,InUSE INT NOT NULL, LIMIT_ INT NOT NULL);''')
     c.execute('''CREATE TABLE P_CLUSTERS (ID INT PRIMARY KEY NOT NULL, CARDNAME STRING NOT NULL ,InUSE INT NOT NULL, LIMIT_ INT NOT NULL);''')
     c.execute('''CREATE TABLE RUNNING_JOBS (ID INT PRIMARY KEY NOT NULL, CARDNAME STRING NOT NULL, FINISH_TIME INT NOT NULL, SLURM_ID INT NOT NULL, TYPE INT NOT NULL);''')
     print ("数据表创建成功")
-    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (1, "NVIDIAGeForceGTX1080", 0, 2))
-    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (2, "NVIDIATITANV", 0, 1))
-    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (3, "NVIDIAGeForceRTX2080Ti", 0, 1))
-    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (4, "NVIDIATITANXp", 0, 1))
+    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (1, "NVIDIAGeForceGTX1080", 0, 4))
+    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (2, "NVIDIATITANV", 0, 0))
+    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (3, "NVIDIATITANRTX", 0, 4))
+    c.execute("INSERT INTO E_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (4, "NVIDIAGeForceRTX2080Ti", 0, 2))
+
     c.execute("INSERT INTO P_CLUSTERS (ID, CARDNAME, InUSE,LIMIT_) VALUES (?,?,?,?)", (1, "NVIDIAGeForceRTX2080Ti", 0, 1))
     print ("数据表初始化数据完成")
     conn.commit()
     conn.close()
 
-def PutJobs(id:int, path: str, NVIDIAGeForceGTX1080: int, NVIDIATITANV: int, NVIDIAGeForceRTX2080Ti: int,NVIDIATITANXp:int, MediumTime: int) -> bool:
+def PutJobs(id:int, path: str, NVIDIAGeForceGTX1080: int, NVIDIATITANV: int, NVIDIATITANRTX:int,NVIDIAGeForceRTX2080Ti: int, MediumTime: int) -> bool:
     try:
         conn = sqlite3.connect(DATABASE_NAME)
         c = conn.cursor()
-        c.execute("INSERT INTO JOBS (ID, PATH, NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp,MediumTime ) VALUES (?,?,?,?,?,?,?)", (id, path, NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIAGeForceRTX2080Ti,NVIDIATITANXp, MediumTime))
+        c.execute("INSERT INTO JOBS (ID, PATH, NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIATITANRTX,NVIDIAGeForceRTX2080Ti,MediumTime ) VALUES (?,?,?,?,?,?,?)", (id, path, NVIDIAGeForceGTX1080,NVIDIATITANV,NVIDIATITANRTX,NVIDIAGeForceRTX2080Ti, MediumTime))
         conn.commit()
         conn.close()
     except Exception as e:
@@ -91,6 +92,8 @@ def GetJobByCard(cardname: str) :
         print(e)
         return -1
     if result == [(None, None, None)]:
+        return -1
+    if result[0][2] == 1145141919810:
         return -1
     return result[0] # (ID, PATH)
 
@@ -198,7 +201,7 @@ def GetMediumTimeSumBeforeID(jobID: int) -> int: # Return times in the queue in 
     try:
         conn = sqlite3.connect(DATABASE_NAME)
         c = conn.cursor()
-        c.execute("SELECT SUM(MediumTime) FROM JOBS WHERE MediumTime<={}".format(GetJobAndTimeByIDCard(jobID,"MediumTime")[1]))
+        c.execute("SELECT SUM(MediumTime) FROM JOBS WHERE MediumTime<={}".format(GetJobAndTimeByIDCard(jobID,"MediumTime")[1]+60))
         result = c.fetchall()
         conn.commit()
         conn.close()
