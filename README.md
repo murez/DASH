@@ -29,6 +29,8 @@ python monitor.py
 
 **Pay attention to the hard coded path in the above two files**
 
+All prerequies are sbatch files in `test_generator`
+
 ## FAQ
 1. if I see `Lock!` when execute:
     - delete `slurm-cli/database.lock`
